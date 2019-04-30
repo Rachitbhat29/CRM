@@ -1,0 +1,16 @@
+
+{% extends "layout.html" %}
+{% block content%}
+{% for c in posts %}
+<article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+<h1>{{ c.First_name}}</h1>
+<h2> {{ c.Last_name}}</h2>
+                </div>
+<p>{{ c.cust_id}}</p>
+<p>{{ c.Address }}</p>
+              </div>
+        </article>
+{% endfor %}
+{% endblock content %}
