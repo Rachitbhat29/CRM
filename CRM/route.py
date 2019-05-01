@@ -1,9 +1,10 @@
 import os
 import secrets
+import datetime
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from CRM import app, db, bcrypt
-from CRM.forms import RegistrationForm,LoginForm, UpdateAccountForm
+from CRM.forms import RegistrationForm,LoginForm, UpdateAccountForm, CreateConsumerForm
 from CRM.models import User,Customer,Addresses
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -95,3 +96,19 @@ def account():
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file= image_file, form=form)
+
+
+@app.route("/new_customer", methods= ['GET','POST'])
+@login_required
+def new_customer():
+    form = CreateConsumerForm()
+    if form.validate_on_submit():
+        customer = Customer(first_name = form.first_name.data, last_name = form.last_name.data, email= form.email.data)
+        db.session.add(customer)
+        customer1 = Customer.query.filter_by(first_name = form.first_name.data, last_name=form.last_name.data, email= form.email.data).first()
+        address = Addresses(address=form.address.data,date_posted= datetime.datetime.now(),cust_id=customer1.cust_id, customer_id=customer1.cust_id)
+        db.session.add(address)
+        db.session.commit()
+        flash('Customer has been craeted')
+        return redirect(url_for('home'))
+    return render_template('create_customer.html', title='New Customer', form = form)

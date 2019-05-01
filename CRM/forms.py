@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length,Email,EqualTo, ValidationError
 from CRM.models import User
 
@@ -46,3 +46,10 @@ class UpdateAccountForm(FlaskForm):
             if user:
                 raise ValidationError('This email is taken, Please enter a new one.')
 
+
+class CreateConsumerForm(FlaskForm):
+    first_name = StringField('Firstname', validators=[DataRequired()])
+    last_name = StringField('Lastname', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    address = TextAreaField('Address', validators= [DataRequired()])
+    submit = SubmitField('Create')
