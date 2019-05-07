@@ -1,16 +1,15 @@
 
 {% extends "layout.html" %}
 {% block content%}
-{% for c in posts %}
-<article class="media content-section">
+    {% for customer in posts %}
+        <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-<h1>{{ c.First_name}}</h1>
-<h2> {{ c.Last_name}}</h2>
-                </div>
-<p>{{ c.cust_id}}</p>
-<p>{{ c.Address }}</p>
-              </div>
+               <a class="mr-2" href="{{ url_for('open_customer', cust_id=customer.cust_id) }}">{{ customer.first_name + ' ' + customer.last_name}}</a>
+            </div>
+            <p>{{ customer.email}}</p>
+            <p>{{customer.cust_id }}</p>
+          </div>
         </article>
-{% endfor %}
+    {% endfor %}
 {% endblock content %}

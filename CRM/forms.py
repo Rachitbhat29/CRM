@@ -47,7 +47,7 @@ class UpdateAccountForm(FlaskForm):
                 raise ValidationError('This email is taken, Please enter a new one.')
 
 
-class CreateConsumerForm(FlaskForm):
+class CreateCustomerForm(FlaskForm):
     first_name = StringField('Firstname', validators=[DataRequired()])
     last_name = StringField('Lastname', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])

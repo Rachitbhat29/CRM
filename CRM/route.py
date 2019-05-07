@@ -4,30 +4,34 @@ import datetime
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from CRM import app, db, bcrypt
-from CRM.forms import RegistrationForm,LoginForm, UpdateAccountForm, CreateConsumerForm
+from CRM.forms import RegistrationForm,LoginForm, UpdateAccountForm, CreateCustomerForm
 from CRM.models import User,Customer,Addresses
 from flask_login import login_user, current_user, logout_user, login_required
 
-customers_date = [
+"""
+customers_data = [
     {
         'cust_id': '1',
-        'First_name': 'John',
-        'Last_name': 'M',
+        'first_name': 'John',
+        'last_name': 'M',
+        'email': 'abc@a.com',
         'Address': '123 Washington'
     },
     {
         'cust_id' : '2',
-        'First_name' : 'Ron',
-        'Last_name' : 'K',
+        'first_name' : 'Ron',
+        'last_name' : 'K',
+        'email': 'bcd@b.com',
         'Address' : '321 Newyork'
     }
 
-]
+]"""
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('Home.html', posts= customers_date)
+    customers_data=Customer.query.all()
+    return render_template('Home.html', posts= customers_data)
 
 @app.route("/register", methods= ['GET','POST'])
 def register():
@@ -98,17 +102,60 @@ def account():
     return render_template('account.html', title='Account', image_file= image_file, form=form)
 
 
-@app.route("/new_customer", methods= ['GET','POST'])
+@app.route("/eCRM/new_customer", methods= ['GET','POST'])
 @login_required
 def new_customer():
-    form = CreateConsumerForm()
+    form = CreateCustomerForm()
     if form.validate_on_submit():
-        customer = Customer(first_name = form.first_name.data, last_name = form.last_name.data, email= form.email.data)
+        customer = Customer(first_name=form.first_name.data, last_name=form.last_name.data, email=form.email.data)
         db.session.add(customer)
-        customer1 = Customer.query.filter_by(first_name = form.first_name.data, last_name=form.last_name.data, email= form.email.data).first()
-        address = Addresses(address=form.address.data,date_posted= datetime.datetime.now(),cust_id=customer1.cust_id, customer_id=customer1.cust_id)
+        customer_data = Customer.query.filter_by(first_name = form.first_name.data, last_name=form.last_name.data, email= form.email.data).first()
+        address = Addresses(address=form.address.data,date_posted= datetime.datetime.now(),cust_id=customer_data.cust_id, customer_id=customer_data.cust_id)
         db.session.add(address)
         db.session.commit()
-        flash('Customer has been craeted')
+        flash('Customer has been created','success')
         return redirect(url_for('home'))
     return render_template('create_customer.html', title='New Customer', form = form)
+
+
+@app.route("/customer/<int:cust_id>" , methods= ['GET','POST'])
+@login_required
+def open_customer(cust_id):
+    cust = Customer.query.get_or_404(int(cust_id))
+    address = Addresses.query.get_or_404(cust_id)
+    return render_template('customer.html', post=cust)
+
+
+@app.route("/customer/<int:cust_id>/update", methods= ['GET','POST'])
+@login_required
+def update_customer(cust_id):
+    customer = Customer.query.get_or_404(int(cust_id))
+    address = Addresses.query.get_or_404(int(cust_id))
+    form = CreateCustomerForm()
+    if form.validate_on_submit():
+        customer.first_name=form.first_name.data
+        customer.last_name=form.last_name.data
+        customer.email=form.email.data
+        address.address=form.address.data
+        db.session.commit()
+        flash('Customer info has been udpated!', 'success')
+        return render_template('customer.html', post=customer)
+    elif request.method == 'GET':
+        form.first_name.data = customer.first_name
+        form.last_name.data =customer.last_name
+        form.email.data = customer.email
+        form.address.data = address.address
+        form.submit.label.text='Update'
+    return render_template('update_customer.html', title='Update Customer', form=form, legend= 'Update Customer', post= customer)
+
+
+@app.route("/customer/<int:cust_id>/delete", methods= ['POST'])
+@login_required
+def delete_customer(cust_id):
+    customer = Customer.query.get_or_404(int(cust_id))
+    address = Addresses.query.get_or_404(int(cust_id))
+    db.session.delete(customer)
+    db.session.delete(address)
+    db.session.commit()
+    flash('Customer has been deleted!','success')
+    return redirect(url_for('home'))

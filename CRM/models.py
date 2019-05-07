@@ -24,7 +24,7 @@ class Customer(db.Model):
     posts = db.relationship('Addresses', backref = 'customerdata', lazy= True)
 
     def  __repr__(self):
-        return f"Customer('{self.first_name}','{self.last_name}','{self.image_file}')"
+        return f"Customer('{self.first_name}','{self.last_name}','{self.email}','{self.cust_id}')"
 
 class Addresses(db.Model):
     cust_id = db.Column(db.Integer, primary_key = True)

@@ -34,7 +34,9 @@
             <div class="navbar-nav">
               <a class="nav-item nav-link" href="{{ url_for('home')}}">Market</a>
               {% if current_user.is_authenticated %}
+                <a class="nav-item nav-link" href="{{ url_for('account')}}"><img class="rounded-circle article-img" src=" {{ url_for('static',filename = 'profile_pics/' + current_user.image_file) }}"></img></a>
                 <a class="nav-item nav-link" href="{{ url_for('new_customer')}}">New Customer</a>
+                <a class="nav-item nav-link" href="{{ url_for('update_customer', cust_id =1)}}">Update Customer</a>
                 <a class="nav-item nav-link" href="{{ url_for('account')}}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout')}}">Logout</a>
               {% else %}

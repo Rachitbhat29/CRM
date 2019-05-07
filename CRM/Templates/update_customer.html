@@ -57,10 +57,11 @@
                     {{ form.address(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
+            <div>
+                {{ form.submit(class="btn btn-outline-info") }}
+
+            </div>
         </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
     </form>
 </div>
 {% endblock content %}
