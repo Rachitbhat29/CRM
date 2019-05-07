@@ -30,7 +30,8 @@ customers_data = [
 @app.route("/")
 @app.route("/home")
 def home():
-    customers_data=Customer.query.all()
+    page = request.args.get('page', 1, type=int)
+    customers_data=Customer.query.order_by(Customer.cust_id.desc()).paginate(page=page ,per_page=2)
     return render_template('Home.html', posts= customers_data)
 
 @app.route("/register", methods= ['GET','POST'])
