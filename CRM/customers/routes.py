@@ -1,10 +1,11 @@
 import datetime
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, jsonify
 from CRM import  db
 from CRM.customers.forms import CreateCustomerForm
 from CRM.models import User,Customer,Addresses
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import Blueprint
+import json
 
 customers = Blueprint('customers', __name__)
 
@@ -67,3 +68,24 @@ def delete_customer(cust_id):
     flash('Customer has been deleted!','success')
     return redirect(url_for('main.home'))
 
+
+
+@customers.route("/customer", methods= ['POST'])
+def add_customers_api():
+    customer = Customer(first_name=request.json['first_name'], last_name=request.json['last_name'], email=request.json['email'])
+    db.session.add(customer)
+    db.session.commit()
+    #c = Customer.query.filter_by(first_name=request.json['first_name'], last_name=request.json['last_name'], email= request.json['email']).first()
+
+    return jsonify({"first_name": request.json['first_name'],
+                   "last_name" : request.json['last_name'],
+                   "email" : request.json['email']})
+
+@customers.route("/customer/no./<int:cust_id>", methods= ['GET'])
+def get_customers_api(cust_id):
+    customer = Customer.query.get_or_404(cust_id)
+    #c = Customer.query.filter_by(first_name=request.json['first_name'], last_name=request.json['last_name'], email= request.json['email']).first()
+
+    return jsonify({"first_name": customer.first_name,
+                   "last_name" : customer.last_name,
+                   "email" : customer.email})

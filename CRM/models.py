@@ -2,7 +2,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from CRM import db,login_manager
 from flask import current_app
 from flask_login import UserMixin
-
+import json
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -39,7 +39,9 @@ class Customer(db.Model):
     posts = db.relationship('Addresses', backref = 'customerdata', lazy= True)
 
     def  __repr__(self):
-        return f"Customer('{self.first_name}','{self.last_name}','{self.email}','{self.cust_id}')"
+        return f"('{self.first_name}','{self.last_name}','{self.email}','{self.cust_id}')"
+
+
 
 class Addresses(db.Model):
     cust_id = db.Column(db.Integer, primary_key = True)
